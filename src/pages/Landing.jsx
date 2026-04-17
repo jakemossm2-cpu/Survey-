@@ -22,7 +22,7 @@ export default function Landing() {
               className="group flex flex-col items-center gap-2 bg-brand-500 hover:bg-brand-600 text-white rounded-2xl px-8 py-7 transition-all shadow-sm"
             >
               <span className="text-4xl">🏗️</span>
-              <span className="text-lg font-bold">Next Our Homes Staff</span>
+              <span className="text-lg font-bold">Nexstar Homes Staff</span>
               <span className="text-brand-100 text-sm">Evaluate a subcontractor</span>
             </button>
 

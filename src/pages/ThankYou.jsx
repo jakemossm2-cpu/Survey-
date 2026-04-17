@@ -10,7 +10,7 @@ export default function ThankYou() {
           <div className="text-6xl">✅</div>
           <h2 className="text-2xl font-bold text-gray-800">Evaluation Submitted!</h2>
           <p className="text-gray-500 text-sm">
-            Thank you for completing the evaluation. Your feedback helps Next Our Homes
+            Thank you for completing the evaluation. Your feedback helps Nexstar Homes
             maintain the highest standards with our subcontractors.
           </p>
           <Link

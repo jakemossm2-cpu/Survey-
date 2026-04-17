@@ -48,7 +48,7 @@ export default function Survey({ respondentType }) {
         {/* Role banner */}
         <div className={`rounded-xl px-5 py-3 mb-5 flex items-center gap-3 text-sm font-medium ${isStaff ? 'bg-blue-50 border border-blue-100 text-blue-800' : 'bg-purple-50 border border-purple-100 text-purple-800'}`}>
           <span className="text-xl">{isStaff ? '🏗️' : '🔨'}</span>
-          <span>{isStaff ? 'Next Our Homes Staff — Contractor Evaluation' : 'Subcontractor Self-Evaluation'}</span>
+          <span>{isStaff ? 'Nexstar Homes Staff — Contractor Evaluation' : 'Subcontractor Self-Evaluation'}</span>
           <Link to="/" className="ml-auto text-xs underline opacity-60 hover:opacity-100">Change</Link>
         </div>
 
