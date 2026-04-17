@@ -1,36 +1,35 @@
-import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState } from 'react'
+import { useNavigate, Link } from 'react-router-dom'
 import Header from '../components/Header'
 import StarRating from '../components/StarRating'
+import ContractorSelect from '../components/ContractorSelect'
 import { useLocalStorage } from '../hooks/useLocalStorage'
 import { QUESTIONS } from '../data/questions'
 
-export default function Survey() {
+export default function Survey({ respondentType }) {
   const navigate = useNavigate()
-  const [context, setContext] = useState(null)
+  const [contractors] = useLocalStorage('contractors', [])
+  const [responses, setResponses] = useLocalStorage('responses', [])
+
+  const [contractor, setContractor] = useState(null)
   const [ratings, setRatings] = useState({})
   const [comments, setComments] = useState({})
   const [submitted, setSubmitted] = useState(false)
-  const [responses, setResponses] = useLocalStorage('responses', [])
 
-  useEffect(() => {
-    const raw = sessionStorage.getItem('survey_context')
-    if (!raw) { navigate('/'); return }
-    setContext(JSON.parse(raw))
-  }, [navigate])
-
+  const isStaff = respondentType === 'staff'
   const allRated = QUESTIONS.every((q) => ratings[q.id] > 0)
+  const canSubmit = allRated && contractor && !submitted
 
   function handleSubmit(e) {
     e.preventDefault()
-    if (!allRated || submitted) return
+    if (!canSubmit) return
 
     const entry = {
       id: crypto.randomUUID(),
-      contractorId: context.contractor.id,
-      contractorName: context.contractor.name,
-      contractorTrade: context.contractor.trade || '',
-      respondentType: context.role,
+      contractorId: contractor.id,
+      contractorName: contractor.name,
+      contractorTrade: contractor.trade || '',
+      respondentType,
       ratings,
       comments,
       submittedAt: new Date().toISOString(),
@@ -38,29 +37,47 @@ export default function Survey() {
 
     setResponses((prev) => [...prev, entry])
     setSubmitted(true)
-    sessionStorage.removeItem('survey_context')
     navigate('/thankyou')
   }
-
-  if (!context) return null
-
-  const roleLabel = context.role === 'staff' ? 'Next Our Homes Staff' : 'Subcontractor'
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
       <main className="max-w-2xl mx-auto px-4 py-8">
-        {/* Context banner */}
-        <div className="bg-brand-50 border border-brand-100 rounded-xl px-5 py-3 mb-6 flex flex-wrap gap-4 text-sm">
-          <span><span className="text-gray-500">Evaluating:</span> <strong>{context.contractor.name}</strong>{context.contractor.trade && ` — ${context.contractor.trade}`}</span>
-          <span><span className="text-gray-500">Submitted by:</span> <strong>{roleLabel}</strong></span>
+
+        {/* Role banner */}
+        <div className={`rounded-xl px-5 py-3 mb-5 flex items-center gap-3 text-sm font-medium ${isStaff ? 'bg-blue-50 border border-blue-100 text-blue-800' : 'bg-purple-50 border border-purple-100 text-purple-800'}`}>
+          <span className="text-xl">{isStaff ? '🏗️' : '🔨'}</span>
+          <span>{isStaff ? 'Next Our Homes Staff — Contractor Evaluation' : 'Subcontractor Self-Evaluation'}</span>
+          <Link to="/" className="ml-auto text-xs underline opacity-60 hover:opacity-100">Change</Link>
+        </div>
+
+        {/* Contractor selector */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-5">
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
+            {isStaff ? 'Select the Subcontractor you are evaluating' : 'Select your company'}
+          </label>
+          {contractors.length === 0 ? (
+            <p className="text-sm text-amber-600 bg-amber-50 border border-amber-200 rounded-lg px-4 py-3">
+              No contractors have been added yet.{' '}
+              <a href="/admin" className="underline font-medium">Go to Admin</a> to add them.
+            </p>
+          ) : (
+            <ContractorSelect
+              contractors={contractors}
+              value={contractor}
+              onChange={setContractor}
+            />
+          )}
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
           {QUESTIONS.map((q, i) => (
             <div key={q.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
               <div className="mb-3">
-                <span className="text-xs font-semibold text-brand-500 uppercase tracking-wide">Question {i + 1} of {QUESTIONS.length}</span>
+                <span className="text-xs font-semibold text-brand-500 uppercase tracking-wide">
+                  Question {i + 1} of {QUESTIONS.length}
+                </span>
                 <h3 className="text-base font-bold text-gray-800 mt-0.5">{q.label}</h3>
                 <p className="text-sm text-gray-500 mt-0.5">{q.description}</p>
               </div>
@@ -80,14 +97,18 @@ export default function Survey() {
 
           <button
             type="submit"
-            disabled={!allRated}
+            disabled={!canSubmit}
             className={`w-full py-3 rounded-xl font-semibold text-white transition-all ${
-              allRated
+              canSubmit
                 ? 'bg-brand-500 hover:bg-brand-600 shadow-sm'
                 : 'bg-gray-200 text-gray-400 cursor-not-allowed'
             }`}
           >
-            {allRated ? 'Submit Evaluation' : `Rate all ${QUESTIONS.length} questions to submit`}
+            {!contractor
+              ? 'Select a contractor above to continue'
+              : !allRated
+              ? `Rate all ${QUESTIONS.length} questions to submit`
+              : 'Submit Evaluation'}
           </button>
         </form>
       </main>

@@ -9,7 +9,8 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Landing />} />
-        <Route path="/survey" element={<Survey />} />
+        <Route path="/staff" element={<Survey respondentType="staff" />} />
+        <Route path="/contractor" element={<Survey respondentType="contractor" />} />
         <Route path="/thankyou" element={<ThankYou />} />
         <Route path="/admin" element={<Admin />} />
       </Routes>
