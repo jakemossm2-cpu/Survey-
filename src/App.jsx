@@ -6,7 +6,7 @@ import Admin from './pages/Admin'
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/Survey-">
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/staff" element={<Survey respondentType="staff" />} />
