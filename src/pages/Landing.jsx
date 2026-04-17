@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import Header from '../components/Header'
 
 export default function Landing() {
@@ -37,9 +37,14 @@ export default function Landing() {
           </div>
         </div>
 
-        <p className="text-center mt-6 text-xs text-gray-400">
-          <a href="/admin" className="hover:underline">Admin Panel</a>
-        </p>
+        <div className="text-center mt-6">
+          <Link
+            to="/admin"
+            className="inline-block bg-white border border-gray-200 hover:border-gray-300 text-gray-600 hover:text-gray-800 text-sm font-medium px-5 py-2 rounded-xl shadow-sm transition-all"
+          >
+            Admin Panel — Add Contractors &amp; View Results
+          </Link>
+        </div>
       </main>
     </div>
   )
